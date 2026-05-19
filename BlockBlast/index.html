@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>ATL's EPI - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Fonte -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- Ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Google Login -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+
+/* FUNDO */
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CARD */
+.login-box {
+    width: 420px;
+    padding: 40px;
+
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(12px);
+
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+
+    color: #e2e8f0;
+}
+
+/* TÍTULO */
+.login-box h1 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.login-box h2 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+/* INPUT COM ÍCONE */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 20px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 8px;
+}
+
+.input-group i {
+    color: #94a3b8;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 8px;
+
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+}
+
+/* CHECKBOX */
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* BOTÃO ENTRAR */
+.login-btn {
+    width: 53%;
+    height: 40px; /* altura igual ao Google */
+    margin-left: 96px;
+
+    border-radius: 6px;
+    border: 1px solid #334155;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.login-btn:hover {
+    background: #1d4ed8;
+}
+/* ERRO */
+.error {
+    color: #ef4444;
+    text-align: center;
+    margin-top: 15px;
+    display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h1>ATL's EPI</h1>
+    <h2>LOGIN</h2>
+
+    <!-- LOGIN -->
+    <div class="input-group">
+        <i class="fa fa-user"></i>
+        <input type="text" id="user" placeholder="Login">
+    </div>
+
+    <!-- SENHA -->
+    <div class="input-group">
+        <i class="fa fa-lock"></i>
+        <input type="password" id="pass" placeholder="Senha">
+    </div>
+
+    <!-- CHECK -->
+    <div class="checkbox">
+        <input type="checkbox" id="remember">
+        <label for="remember">Lembrar-me</label>
+    </div>
+
+    <!-- BOTÃO ENTRAR -->
+    <button class="login-btn" onclick="login()">Entrar</button>
+
+    <!-- DIVISOR -->
+    <div class="divider">ou</div>
+
+    <!-- GOOGLE LOGIN -->
+    <div id="g_id_onload"
+         data-client_id="SEU_CLIENT_ID_AQUI"
+         data-callback="handleCredentialResponse">
+    </div>
+
+    <div class="g_id_signin"
+         data-theme="outline"
+         data-size="large">
+    </div>
+
+    <!-- ERRO -->
+    <div class="error" id="error">
+        Login ou senha inválidos
+    </div>
+
+</div>
+
+<script>
+
+// LOGIN NORMAL
+function login() {
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+
+    if (user === "admin" && pass === "123") {
+        localStorage.setItem("logado", "true");
+        window.location.href = "index.html";
+    } else {
+        document.getElementById("error").style.display = "block";
+    }
+}
+
+// LOGIN GOOGLE
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+
+    console.log("Usuário:", data);
+
+    localStorage.setItem("logado", "true");
+    localStorage.setItem("user", data.name);
+
+    window.location.href = "index.html";
+}
+
+// DECODIFICAR TOKEN GOOGLE
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+</script>
+
+</body>
+</html>
